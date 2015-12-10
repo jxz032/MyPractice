@@ -1,0 +1,406 @@
+#region Trees & Graphs
+
+        #region Tree
+        public class TreeNode
+        {
+            public TreeNode(int value)
+            {
+                Value = value;
+            }
+
+            public TreeNode(TreeNode parentNode, int value)
+            {
+                Parent = parentNode;
+                Value = value;
+            }
+
+            public TreeNode Parent { get; set; }
+            public TreeNode Left { get; set; }
+            public TreeNode Right { get; set; }
+
+            public int Value { get; set; }
+        }
+
+        #region Check Trees Same
+        static void MainCheckTrees(string[] args)
+        {
+            TreeNode node1 = new TreeNode(5);
+            node1.Left = new TreeNode(node1, 1);
+            node1.Right = new TreeNode(node1, 6);
+            node1.Left.Left = new TreeNode(node1.Left, 5);
+            node1.Left.Right = new TreeNode(node1.Left, 4);
+
+            node1.Right.Left = new TreeNode(node1.Right, 3);
+            node1.Right.Right = new TreeNode(node1.Right, 6);
+
+            TreeNode node2 = new TreeNode(1);
+            node2.Left = new TreeNode(node2, 3);
+            node2.Right = new TreeNode(node2, 4);
+            node2.Left.Right = new TreeNode(node2.Left, 6);
+            node2.Right.Right = new TreeNode(node2.Right, 5);
+
+
+            bool test = CheckTwoTrees(node1, node2);
+
+        }
+
+        public static bool CheckTwoTrees(TreeNode node1, TreeNode node2)
+        {
+            Hashtable hash1 = new Hashtable();
+            hash1 = TranverseAndSetUpHash(node1, hash1);
+
+            Hashtable hash2 = TranverseAndLookUpHash(node2, hash1);
+
+            if (hash2.ContainsValue(false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static Hashtable TranverseAndSetUpHash(TreeNode root, Hashtable hash)
+        {
+            if (root == null)
+            {
+                return hash;
+            }
+
+            hash[root.Value] = false;
+
+            TranverseAndSetUpHash(root.Left, hash);
+            TranverseAndSetUpHash(root.Right, hash);
+
+            return hash;
+        }
+
+        public static Hashtable TranverseAndLookUpHash(TreeNode root, Hashtable hash)
+        {
+            if (root == null)
+            {
+                return hash;
+            }
+
+            if (hash.ContainsKey(root.Value))
+            {
+                hash[root.Value] = true;
+            }
+
+            TranverseAndLookUpHash(root.Left, hash);
+            TranverseAndLookUpHash(root.Right, hash);
+
+            return hash;
+        }
+        #endregion
+
+        #region Check if tree balanced
+        public static void MainCheckTreeBalanced()
+        {
+            TreeNode node1 = new TreeNode(1);
+            node1.Left = new TreeNode(node1, 2);
+            node1.Right = new TreeNode(node1, 3);
+            //node1.Left.Left = new TreeNode(node1.Left, 5);
+            //node1.Left.Right = new TreeNode(node1.Left, 4);
+
+            //node1.Right.Left = new TreeNode(node1.Right, 3);
+            //node1.Right.Right = new TreeNode(node1.Right, 6);
+            bool test = IsTreeBalanced(node1);
+        }
+
+        public static bool IsTreeBalanced(TreeNode root)
+        {
+            if (root == null)
+                return false;
+
+            bool isBalanced = false;
+
+            isBalanced = root.Left == null && root.Right == null;
+
+            isBalanced = !isBalanced && IsTreeBalanced(root.Left);
+            isBalanced = !isBalanced && IsTreeBalanced(root.Right);
+            isBalanced = !isBalanced && root.Left != null && root.Right != null && root.Left.Value < root.Value && root.Right.Value > root.Value;
+
+            return isBalanced;
+        }
+        #endregion
+
+        #region Convert array to BST
+
+        public static void MainConvertArrayToBST()
+        {
+            int[] array = { 1, 2, 3, 4, 5 };
+            TreeNode node = ConvertArrayToBST(array, 0, array.Length - 1);
+        }
+
+        public static TreeNode ConvertArrayToBST(int[] array, int start, int end)
+        {
+            if (start > end) return null;
+
+            int mid = (start + end) / 2;
+            TreeNode root = new TreeNode(array[mid]);
+            root.Left = ConvertArrayToBST(array, start, mid - 1);
+            root.Right = ConvertArrayToBST(array, mid + 1, end);
+
+            return root;
+        }
+        #endregion
+
+        #region PrintEachTreeLevel
+        public static void MainPrintEachTreeLevel()
+        {
+            TreeNode node1 = new TreeNode(1);
+
+            node1.Left = new TreeNode(node1, 2);
+            node1.Right = new TreeNode(node1, 3);
+
+            node1.Left.Left = new TreeNode(node1.Left, 4);
+            node1.Left.Right = new TreeNode(node1.Left, 5);
+            node1.Right.Left = new TreeNode(node1.Right, 6);
+            node1.Right.Right = new TreeNode(node1.Right, 7);
+
+            TreeNode current = node1.Left;
+            ListedListTreeNode currentLevel = new ListedListTreeNode(node1);
+            List<ListedListTreeNode> eachLevelNodes = new List<ListedListTreeNode>();
+            eachLevelNodes.Add(currentLevel);
+
+            while (current != null)
+            {
+                currentLevel = PrintBinaryTreeByDepth(current, currentLevel);
+                eachLevelNodes.Add(currentLevel);
+                current = current.Left;
+            }
+        }
+
+        public static ListedListTreeNode AddNewTreeNode(ListedListTreeNode head, TreeNode newNode)
+        {
+            ListedListTreeNode current = head;
+
+            while (current.Next != null)
+            {
+                current = current.Next;
+            }
+            current.Next = new ListedListTreeNode(newNode);
+            return head;
+        }
+
+        public class ListedListTreeNode
+        {
+            public ListedListTreeNode()
+            {
+            }
+
+            public ListedListTreeNode(TreeNode value)
+            {
+                Item = value;
+            }
+
+            public ListedListTreeNode Next { get; set; }
+            public TreeNode Item { get; set; }
+        }
+
+        public static ListedListTreeNode PrintBinaryTreeByDepth(TreeNode root, ListedListTreeNode lastLevelHead)
+        {
+            if (root.Parent == null)
+            {
+                return new ListedListTreeNode(root);
+            }
+
+            ListedListTreeNode lastLevelTreeNode = lastLevelHead;
+            ListedListTreeNode newLevelHead = new ListedListTreeNode(root);
+
+            while (lastLevelTreeNode != null)
+            {
+                AddNewTreeNode(newLevelHead, lastLevelTreeNode.Item.Left);
+                AddNewTreeNode(newLevelHead, lastLevelTreeNode.Item.Right);
+
+                lastLevelTreeNode = lastLevelTreeNode.Next;
+            }
+
+            return newLevelHead.Next;
+        }
+        #endregion
+
+        #region Find next node (in order)
+
+        public static void MainFindNextNode()
+        {
+            TreeNode node1 = new TreeNode(1);
+
+            node1.Left = new TreeNode(node1, 2);
+            node1.Right = new TreeNode(node1, 3);
+
+            node1.Left.Left = new TreeNode(node1.Left, 4);
+            node1.Left.Right = new TreeNode(node1.Left, 5);
+            node1.Right.Left = new TreeNode(node1.Right, 6);
+            node1.Right.Right = new TreeNode(node1.Right, 7);
+
+            TreeNode node2 = node1.Right.Left;
+            TreeNode node3 = node1.Right.Right;
+
+            TreeNode test = FindCommonAncester(node1, node2, node3);
+        }
+
+        public static TreeNode FindNext(TreeNode current)
+        {
+            if (current.Right != null) return current.Right;
+            if (current.Left != null && current.Right == null) return current.Parent;
+            if (current.Left == null && current.Right == null)
+            {
+                if (current == current.Parent.Left) return current.Parent;
+                if (current == current.Parent.Right && current.Parent.Parent.Right != current.Parent) return current.Parent.Parent;
+            }
+            return null;
+        }
+
+        public static TreeNode FindCommonAncester(TreeNode root, TreeNode node1, TreeNode node2)
+        {
+            bool leftExists = true;
+            bool rightExists = true;
+            TreeNode current = root;
+
+            while (leftExists && current != null)
+            {
+                leftExists = Covers(current, node1) && Covers(current, node2);
+
+                if (!leftExists) break;
+                current = current.Left;
+            }
+
+            current = current.Parent;
+
+            while (!leftExists && rightExists && current != null)
+            {
+                rightExists = Covers(current, node1) && Covers(current, node2);
+                if (!rightExists) return current.Parent;
+                current = current.Right;
+            }
+
+            return current;
+        }
+
+        public static bool Covers(TreeNode root, TreeNode node)
+        {
+            TreeNode current = root;
+
+            if (current == null) return false;
+            if (current == node) return true;
+
+            return Covers(root.Left, node) || Covers(root.Right, node);
+        }
+
+        #endregion
+
+        #region Decide if it's subtree
+
+        public static void MainSubtree()
+        {
+            TreeNode node1 = new TreeNode(1);
+
+            node1.Left = new TreeNode(node1, 2);
+            node1.Right = new TreeNode(node1, 3);
+
+            node1.Left.Left = new TreeNode(node1.Left, 4);
+            node1.Left.Right = new TreeNode(node1.Left, 5);
+            node1.Right.Left = new TreeNode(node1.Right, 6);
+            node1.Right.Right = new TreeNode(node1.Right, 7);
+
+            int sum = SumUpTreeFromAnyNode(node1.Left, 0);
+
+            //TreeNode node = new TreeNode(3);
+            //node.Left = new TreeNode(node.Left, 6);
+            //node.Right = new TreeNode(node.Right, 7);
+            //bool isSubTree = IsSubtree(node1, node);
+        }
+
+        public static bool IsSubtree(TreeNode t1, TreeNode t2)
+        {
+            TreeNode findT2 = FindNodeByValue(t1, t2);
+
+            return findT2 != null && IsSameTree(findT2, t2);
+        }
+
+        public static bool IsSameTree(TreeNode t1, TreeNode t2)
+        {
+            if (t1 == null && t2 == null)
+            {
+                return true;
+            }
+            else if (t1 != null && t2 != null)
+            {
+
+                t1.Parent = null;
+                t2.Parent = null;
+
+                if (t1.Value == t2.Value && IsSameTree(t1.Left, t2.Left) && IsSameTree(t1.Right, t2.Right)) return true;
+            }
+
+            return false;
+        }
+
+        public static TreeNode FindNodeByValue(TreeNode root, TreeNode node)
+        {
+            TreeNode current = root;
+
+            if (current == null) return null;
+            if (current.Value == node.Value) return current;
+
+            current = FindNodeByValue(current.Left, node);
+
+            if (current == null)
+            {
+                current = root;
+                current = FindNodeByValue(current.Right, node);
+            }
+
+            return current;
+        }
+
+        public static int SumUpTreeChild(TreeNode root, int sum)
+        {
+            if (root == null) return sum;
+            sum = SumUpTreeChild(root.Left, sum) + root.Value + SumUpTreeChild(root.Right, sum);
+            return sum;
+        }
+
+        public static int SumUpTreeFromAnyNode(TreeNode node, int sum)
+        {
+            if (node == null) return sum;
+
+            if (node == node.Parent.Left) // left node
+            {
+                sum = SumUpTreeChild(node, sum) + node.Parent.Value + SumUpTreeChild(node.Parent.Right, sum);
+            }
+            else if (node == node.Parent.Right) // right node
+            {
+                sum = SumUpTreeChild(node, sum) + node.Parent.Value + SumUpTreeChild(node.Parent.Left, sum);
+            }
+            else if (node.Parent == null) //root
+            {
+                sum = SumUpTreeChild(node, sum);
+            }
+
+            return sum;
+        }
+        
+
+        #endregion
+        #endregion
+
+        #region Graph
+
+        public class GraphNode
+        {
+            public enum State
+            {
+                Visited,
+                NotVisitied
+            }
+
+            public Node Node { get; set; }
+            public int Value { get; set; }
+            public List<GraphNode> Neighbours { get; set; }
+        }
+        #endregion
+        #endregion
