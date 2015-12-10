@@ -1,0 +1,81 @@
+
+        #region Bit Manipulation
+
+        public static void Main()
+        {
+            string test = ConvertDoubleToBinary(10.34, 4);
+           
+        }
+
+        public static void SetBit(int n, int m, int i, int j)
+        {
+            int left = ~0 - ((1 << j) - 1);
+            int right = (1 << i) - 1;
+            int mask = left | right;
+
+            int clearedN = n & mask;
+            m = m << i;
+            int result = clearedN | m;
+
+            Console.WriteLine(Convert.ToString(result, 2));
+            Console.ReadLine();
+        }
+
+        public static string ConvertIntToBinary(int n)
+        {
+            List<int> buffer = new List<int>();
+
+            while (n > 1)
+            {
+                int temp = n%2;
+                buffer.Add(temp);
+                n = n/2;
+            }
+
+            buffer.Add(n);
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = buffer.Count - 1; i >= 0; i--)
+            {
+                sb.Append(buffer[i]);
+            }
+
+            return sb.ToString();
+        }
+
+        public static string ConvertFractionToBinary(double n, int digits)
+        {
+            StringBuilder sb = new StringBuilder();
+            while (digits > 0)
+            {
+                n = n*2;
+                sb.Append(Convert.ToInt32(Math.Floor(n))); 
+
+                if (n > 1)
+                {
+                    n = GetFraction(n);
+                }
+                
+                digits--;
+            }
+            return sb.ToString();
+        }
+
+        public static double GetFraction(double n)
+        {
+            return n - Math.Floor(n);
+        }
+
+        public static string ConvertDoubleToBinary(double n, int digits)
+        {
+            int integer = Convert.ToInt32(Math.Floor(n));
+
+            string integerPart = ConvertIntToBinary(integer);
+
+            string fractionPart = ConvertFractionToBinary(GetFraction(n), 4);
+
+            return integerPart + "." + fractionPart;
+        }
+
+        #endregion
