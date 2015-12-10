@@ -1,0 +1,420 @@
+
+        #region Sorting
+
+        #region BubbleSort
+        static void MainBubbleSort()
+        {
+            int[] arr = { 4, 3, 2, 1, 5, 6, 0, 13, 12, 1 };
+            // int[] arr = {4, 3, 2, 1};
+            arr = BubbleSortRecursive(arr, 0, arr.Length - 1);
+            // arr = BubbleSort(arr);
+        }
+
+        public static int[] BubbleSortRecursive(int[] arr, int left, int right)
+        {
+            if (left == right)
+            {
+                return arr;
+            }
+
+            for (int i = left; i < right; i++)
+            {
+                if (arr[i] > arr[i + 1])
+                {
+                    int temp = arr[i];
+                    arr[i] = arr[i + 1];
+                    arr[i + 1] = temp;
+                }
+            }
+
+            return BubbleSortRecursive(arr, left, right - 1);
+
+
+        }
+
+        public static int[] BubbleSort(int[] arr)
+        {
+            for (int j = arr.Length; j > 1; j--)
+            {
+                for (int i = 0; i < j - 1; i++)
+                {
+                    if (arr[i] > arr[i + 1])
+                    {
+                        int temp = arr[i];
+                        arr[i] = arr[i + 1];
+                        arr[i + 1] = temp;
+                    }
+                }
+            }
+
+            return arr;
+        }
+        #endregion
+
+        #region MergeSort
+        static void MainMergeSort(string[] args)
+        {
+            int[] arr = new int[] { 4, 13, 2, 11, 5, 6 };
+
+            int[] sortedArr = MergeSort(arr);
+
+        }
+
+        public static int[] MergeSort(int[] arr)
+        {
+            if (arr.Length == 0 || arr.Length == 1) return arr;
+
+            int mid = arr.Length / 2;
+            int[] leftArr = new int[mid];
+            int[] rightArr = new int[mid];
+
+            leftArr = GetArrayRange(arr, 0, mid - 1);
+            rightArr = GetArrayRange(arr, mid, arr.Length - 1);
+
+            leftArr = MergeSort(leftArr);
+            rightArr = MergeSort(rightArr);
+
+            return Merge(leftArr, rightArr);
+        }
+
+        public static int[] GetArrayRange(int[] sourceArray, int startIndex, int endIndex)
+        {
+            int[] desArray = new int[endIndex - startIndex + 1];
+            int index = 0;
+            while (startIndex <= endIndex)
+            {
+                desArray[index] = sourceArray[startIndex];
+                startIndex++;
+                index++;
+            }
+
+            return desArray;
+        }
+
+        public static int[] Merge(int[] arr1, int[] arr2)
+        {
+            int[] arr3 = new int[arr1.Length + arr2.Length];
+
+            int index1 = 0;
+            int index2 = 0;
+            int index3 = 0;
+
+            while (true)
+            {
+                if (arr1[index1] < arr2[index2])
+                {
+                    arr3[index3] = arr1[index1];
+                    index1++;
+                    index3++;
+                }
+                else
+                {
+                    arr3[index3] = arr2[index2];
+                    index2++;
+                    index3++;
+                }
+
+                if (index1 >= arr1.Length && index2 >= arr2.Length)
+                {
+                    return arr3;
+                }
+
+                if (index1 >= arr1.Length && index2 < arr2.Length)
+                {
+                    while (index2 < arr2.Length)
+                    {
+                        arr3[index3] = arr2[index2];
+                        index2++;
+                        index3++;
+                    }
+
+                    return arr3;
+                }
+
+                if (index1 < arr1.Length && index2 >= arr2.Length)
+                {
+                    while (index1 < arr1.Length)
+                    {
+                        arr3[index3] = arr1[index1];
+                        index1++;
+                        index3++;
+                    }
+
+                    return arr3;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Insertion Sort
+
+        static void MainInsertionSort()
+        {
+            int[] arr = { 4, 3, 2, 1, 5, 6, 0, 13, 12, 1 };
+            // int[] arr = {4, 3, 2, 1};
+
+            //arr = InsertionSort(arr);
+            arr = InsertionSortRecursive(arr, arr.Length);
+        }
+
+        public static int[] InsertionSort(int[] arr)
+        {
+            for (int j = arr.Length; j > 0; j--)
+            {
+                for (int i = 1; i < j; i++)
+                {
+                    if (arr[i] < arr[i - 1])
+                    {
+                        int temp = arr[i];
+                        arr[i] = arr[i - 1];
+                        arr[i - 1] = temp;
+                    }
+                }
+            }
+
+            return arr;
+        }
+
+        public static int[] InsertionSortRecursive(int[] arr, int wall)
+        {
+            if (wall == 1) return arr;
+
+            for (int i = 1; i < wall; i++)
+            {
+                if (arr[i] < arr[i - 1])
+                {
+                    int temp = arr[i];
+                    arr[i] = arr[i - 1];
+                    arr[i - 1] = temp;
+                }
+            }
+
+            return InsertionSortRecursive(arr, wall - 1);
+
+        }
+        #endregion
+
+        #region QuickSelect
+        static void MainQuickSelect(string[] args)
+        {
+            int[] arr = { 5, 4, 3, 2, 1 };
+
+            int mid;
+            int result;
+
+            if (arr.Count() % 2 == 0)
+            {
+                mid = (arr.Count() + 1) / 2;
+            }
+            else
+            {
+                mid = arr.Count() / 2;
+            }
+
+            result = QuickSelect(arr, 0, arr.Count() - 1, mid);
+
+            Console.WriteLine(arr[result]);
+        }
+
+        public static int QuickSelect(int[] arr, int left, int right, int k)
+        {
+            int pivot = Partition(arr, left, right);
+
+            if (pivot == k)
+            {
+                return pivot;
+            }
+            else if (pivot > k)
+            {
+                return QuickSelect(arr, left, pivot - 1, k);
+            }
+            else
+            {
+                return QuickSelect(arr, pivot + 1, right, k);
+            }
+        }
+
+        public static int Partition(int[] arr, int left, int right)
+        {
+            int pivot = arr[left];
+
+            while (left < arr.Count() && right < arr.Count())
+            {
+                while (arr[left] < pivot)
+                {
+                    left++;
+                    if (left >= right) break;
+                }
+
+                while (arr[right] > pivot)
+                {
+                    right--;
+                    if (right <= left) break;
+                }
+
+                if (left >= right)
+                {
+                    return right;
+                }
+
+                if (arr[left] > arr[right])
+                {
+                    int temp = arr[left];
+                    arr[left] = arr[right];
+                    arr[right] = temp;
+                }
+            }
+
+
+            return right;
+        }
+        #endregion
+
+        #region QuickSort
+
+        static void MainQuickSort()
+        {
+            int[] arr = { 4, 3, 2, 1 };
+
+            arr = QuickSort(arr, 0, arr.Length - 1);
+        }
+
+        public static int[] QuickSort(int[] arr, int left, int right)
+        {
+            if (arr == null || arr.Length <= 1) return arr;
+
+            if (left < right)
+            {
+                int pivot = Partition1(arr, left, right);
+
+                arr = QuickSort(arr, 0, pivot - 1);
+                arr = QuickSort(arr, pivot + 1, right);
+            }
+            return arr;
+        }
+
+        public static int Partition1(int[] arr, int left, int right)
+        {
+            int pivot = arr[left];
+
+            while (true)
+            {
+                while (arr[left] < pivot)
+                {
+                    left++;
+                }
+
+                while (arr[right] > pivot)
+                {
+                    right--;
+                }
+
+                if (left >= right) return right;
+
+                if (arr[left] > arr[right])
+                {
+                    int temp = arr[left];
+                    arr[left] = arr[right];
+                    arr[right] = temp;
+                }
+            }
+
+        }
+
+        public static char[] QuickSort(char[] arr, int left, int right)
+        {
+            if (arr == null || arr.Length <= 1) return arr;
+
+            if (left < right)
+            {
+                int pivot = Partition1(arr, left, right);
+
+                arr = QuickSort(arr, 0, pivot - 1);
+                arr = QuickSort(arr, pivot + 1, right);
+            }
+            return arr;
+        }
+
+        public static int Partition1(char[] arr, int left, int right)
+        {
+            char pivot = arr[left];
+
+            while (true)
+            {
+                while (arr[left] < pivot)
+                {
+                    left++;
+                }
+
+                while (arr[right] > pivot)
+                {
+                    right--;
+                }
+
+                if (left >= right) return right;
+
+                if (arr[left] > arr[right])
+                {
+                    char temp = arr[left];
+                    arr[left] = arr[right];
+                    arr[right] = temp;
+                }
+
+                if (arr[left] == arr[right])
+                {
+                    if (left + 1 != right)
+                    {
+                        char temp = arr[left + 1];
+                        arr[left + 1] = arr[right];
+                        arr[right] = temp;
+                    }
+                    return left;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region FindSecretNumber
+
+        public static void FindSecretNumberMain()
+        {
+            int secretNumber = Guess();
+        }
+
+        public static int IsMyNumber(int num)
+        {
+            const int secretNumber = 10;
+
+            if (num > secretNumber) return 1;
+            if (num == secretNumber) return 0;
+
+            return -1;
+        }
+
+        public static int Guess()
+        {
+            int upperBound = Convert.ToInt16(Int16.MaxValue);
+            int lowerBound = Convert.ToInt16(Int16.MinValue);
+
+            int result = BinarySearch(lowerBound, upperBound);
+
+            return result;
+        }
+
+        public static int BinarySearch(int lowerBound, int upperBound)
+        {
+            int pivot = (lowerBound + upperBound) / 2;
+
+            int result = IsMyNumber(pivot);
+
+            if (result < 0) return BinarySearch(pivot + 1, upperBound);
+            if (result > 0) return BinarySearch(lowerBound, pivot - 1);
+
+            return pivot;
+        }
+        #endregion
+
+        #endregion
