@@ -1,0 +1,114 @@
+
+        #region LinkedList
+        static void MainBreakLinkedList(string[] args)
+        {
+            LinkedList origList = new LinkedList(new int[] { 1, 2, 3, 5, 8, 13, 21, 22, 23, 24, 25 });
+
+            Node breakPoint = FiboBreakPoint(origList);
+
+            LinkedList secondList = new LinkedList();
+            secondList.head = breakPoint.Next;
+            breakPoint.Next = null;
+
+            LinkedList firstList = new LinkedList();
+            firstList.head = origList.head;
+
+
+        }
+
+        static void NthToEndNodeMain()
+        {
+            Node head = new Node(0);
+            head.Next = new Node(1);
+            head.Next.Next = new Node(2);
+            head.Next.Next.Next = new Node(3);
+            head.Next.Next.Next.Next = new Node(4);
+
+            Node nthNode = NthToEndNode(head, 2);
+        }
+
+        public static Node NthToEndNode(Node head, int n)
+        {
+            Node last = head;
+            Node current = head;
+
+            int indexCurrent = 0;
+            int indexEnd = 0;
+            while (last.Next != null)
+            {
+                indexEnd++;
+                last = last.Next;
+            }
+
+            if (n == indexEnd + 1) return head;
+            if (n == 0) return last;
+
+            while (indexEnd - indexCurrent > n)
+            {
+                current = current.Next;
+                indexCurrent++;
+            }
+
+            return current;
+        }
+
+        public static Node FiboBreakPoint(LinkedList origList)
+        {
+            Node node = origList.head;
+
+            while (node.Next.Next != null)
+            {
+                if (node.Item + node.Next.Item == node.Next.Next.Item)
+                {
+                    node = node.Next;
+                }
+                else
+                {
+                    return node.Next;
+                }
+
+            }
+
+            return node;
+        }
+
+        public class Node
+        {
+            public Node()
+            {
+
+            }
+            public Node(int value)
+            {
+                Item = value;
+            }
+            public int Item { get; set; }
+            public string State { get; set; }
+            public Node Next { get; set; }
+        }
+
+        public class LinkedList
+        {
+            public LinkedList() { }
+
+            public Node head { get; set; }
+
+            public LinkedList(int[] arr)
+            {
+                head = new Node(arr[0]);
+
+                Node current = head;
+
+                while (current.Next != null)
+                {
+                    current = current.Next;
+                }
+
+                for (int i = 1; i < arr.Length; i++)
+                {
+                    current.Next = new Node(arr[i]);
+                    current = current.Next;
+                }
+            }
+        }
+        #endregion
