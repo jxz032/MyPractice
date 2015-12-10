@@ -1,0 +1,74 @@
+
+        #region HashTable
+        #region Duplicate LookUp
+        static void MainDuplicatedKeys(string[] args)
+        {
+            int[] arr1 = new int[] { 0, 1, 2 };
+            int[] arr2 = new int[] { 5, 3, 4 };
+
+            int result = DuplicatedLookUp(arr1, arr2);
+
+        }
+
+        public static int DuplicatedLookUp(int[] arr1, int[] arr2)
+        {
+            Hashtable hash1 = new Hashtable();
+            foreach (int i in arr1)
+            {
+                hash1[i] = 0;
+            }
+
+            foreach (int i in arr2)
+            {
+                if (hash1.ContainsKey(i))
+                {
+                    int count = int.Parse(hash1[i].ToString());
+                    count++;
+                    hash1[i] = count;
+                }
+            }
+            return hash1.Values.OfType<int>().FirstOrDefault(s => s > 0).GetHashCode();
+        }
+
+        static void MainDuplicatedChar()
+        {
+            string test = "dcba";
+            // bool result = DuplicatedCharLookUp(test);
+            bool result = DuplicatedCharLookUp_NoExtraSpace(test);
+        }
+
+        public static bool DuplicatedCharLookUp(string str)
+        {
+            char[] charArray = str.ToCharArray();
+
+            Hashtable hash = new Hashtable();
+
+            for (int i = 0; i < charArray.Length; i++)
+            {
+                if (hash.ContainsKey(charArray[i]))
+                {
+                    return true;
+                }
+
+                hash[charArray[i]] = false;
+
+            }
+            return false;
+        }
+
+        public static bool DuplicatedCharLookUp_NoExtraSpace(string str)
+        {
+            char[] charArray = str.ToCharArray();
+
+            charArray = QuickSort(charArray, 0, charArray.Count() - 1);
+            int index = 0;
+
+            while (index < charArray.Count() - 1)
+            {
+                if (charArray[index] == charArray[index + 1]) return true;
+                index++;
+            }
+            return false;
+        }
+        #endregion
+        #endregion
