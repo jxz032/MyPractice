@@ -1,0 +1,482 @@
+
+        #region String or Int array
+
+        #region Max
+        static void MainMax(string[] args)
+        {
+            int[] arr = { 1, 2, 3, 4, 5 };
+            int result = Max(arr);
+        }
+
+        public static int Max(int[] arr)
+        {
+            if (arr.Count() == 1)
+            {
+                return arr[0];
+            }
+
+            int temp = arr[0];
+            int index = 0;
+
+            while (true)
+            {
+                if (arr[index] > temp) temp = arr[index];
+                index++;
+
+                if (index > arr.Count() - 1) break;
+            }
+
+            return temp;
+
+        }
+        #endregion
+
+        #region FindOccurence
+        static void MainFindOccurence(string[] args)
+        {
+            int[] arr = { 1, 2, 3, 4, 5, 5, 7, 8 };
+
+            int[] result = FindFirstLastOccurence(arr, 8);
+        }
+        public static int[] FindFirstLastOccurence(int[] arr, int k)
+        {
+            int left = 0;
+            int right = arr.Count() - 1;
+
+            if (arr.Count() == 0)
+            {
+                return null;
+            }
+            else
+            {
+                while (arr[left] != k)
+                {
+                    left++;
+
+                    if (left > arr.Count() - 1)
+                    {
+                        left = -1;
+                        break;
+                    }
+                }
+
+                while (arr[right] != k)
+                {
+                    right--;
+
+                    if (right < 0)
+                    {
+                        right = -1;
+                        break;
+                    }
+                }
+
+                if (left >= right)
+                {
+                    return new[] { left, left };
+                }
+
+            }
+            return new int[] { left, right };
+        }
+        #endregion
+
+        #region Reverse String
+        static void MainReverse()
+        {
+            string reversedStr = Reverse("abcde");
+        }
+
+        public static string Reverse(string str)
+        {
+            char[] charArray = str.ToCharArray();
+            int index1 = 0;
+            int index2 = charArray.Length - 1;
+
+            while (index1 < index2)
+            {
+                char temp = charArray[index1];
+                charArray[index1] = charArray[index2];
+                charArray[index2] = temp;
+
+                index1++;
+                index2--;
+            }
+            StringBuilder sb = new StringBuilder();
+
+            foreach (char item in charArray)
+            {
+                sb.Append(item);
+            }
+            return sb.ToString();
+        }
+        #endregion
+
+        #region Remove Duplicated Char
+
+        static void MainRemoveDup()
+        {
+            string str = "JingyiZhao";
+            string result = RemoveDuplicateChar(str);
+        }
+
+        public static string RemoveDuplicateChar(string str)
+        {
+            char[] orderedStr = QuickSort(str.ToCharArray(), 0, str.Length - 1);
+            int index1 = 0;
+            int index2 = index1 + 1;
+            int tail = 0;
+
+            while (index2 < str.Length)
+            {
+                if (orderedStr[index1] != orderedStr[index2])
+                {
+                    orderedStr[tail] = orderedStr[index1];
+                    tail++;
+                }
+
+                if (index2 == str.Length - 1 && orderedStr[tail] != orderedStr[index2])
+                {
+                    orderedStr[tail] = orderedStr[index2];
+                }
+
+                index1++;
+                index2++;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i <= tail; i++)
+            {
+                sb.Append(orderedStr[i]);
+            }
+            return sb.ToString();
+
+        }
+        #endregion
+
+        #region Remove "%20" in string
+
+        static void MainRemoveSpace()
+        {
+            string result = RemoveSpace("aa%20");
+        }
+
+        public static string RemoveSpace(string str)
+        {
+            char[] charArray = str.ToCharArray();
+
+            int index = 0;
+            int tail = 0;
+
+            while (index < charArray.Length)
+            {
+                if (index < charArray.Length - 2 && charArray[index] == '%' && charArray[index + 1] == '2' && charArray[index + 2] == '0')
+                {
+                    if (index + 3 < charArray.Length)
+                        charArray[tail] = charArray[index + 3];
+                    index = index + 3;
+                }
+                else
+                {
+                    charArray[tail] = charArray[index];
+                    tail++;
+                    index++;
+                }
+
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < tail; i++)
+            {
+                sb.Append(charArray[i]);
+            }
+            return sb.ToString();
+        }
+
+        #endregion
+
+        #region Rotate Image By 90 Degree
+
+        static void MainRotateMatrix()
+        {
+            int[,] matrix = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            //int[,] rotatedLeft = RotateMatrixInPlace(matrix, "left");
+            int[,] rotatedRight = RotateMatrixInPlace(matrix, "right");
+        }
+
+        public static int[,] RotateMatrix(int[,] matrix, string direction)
+        {
+            int[,] rotatedMatrix = new int[matrix.GetLength(0), matrix.GetLength(1)];
+
+            int[] newRow;
+            int rowNum = 0;
+            int columnNum = 0;
+
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                newRow = direction == "left" ? GetColumn(matrix, matrix.GetLength(0) - i - 1) : GetColumn(matrix, i).Reverse().ToArray();
+
+                foreach (int item in newRow)
+                {
+                    rotatedMatrix[rowNum, columnNum] = item;
+                    columnNum++;
+                }
+                columnNum = 0;
+                rowNum++;
+            }
+
+
+            return rotatedMatrix;
+        }
+
+        public static int[,] RotateMatrixInPlace(int[,] matrix, string direction)
+        {
+            int size = matrix.GetLength(0);
+
+            for (int layer = 0; layer < size; layer++)
+            {
+                int first = layer;
+                int last = size - 1 - layer;
+
+                for (int i = first; i < last; i++)
+                {
+                    int top = matrix[first, i];
+
+                    if (direction == "left")
+                    {
+                        // top -> left
+                        matrix[first, i] = matrix[i, last];
+                        //left -> bottom
+                        matrix[i, last] = matrix[last, last - i];
+                        //bottom -> right
+                        matrix[last, last - i] = matrix[last - i, first];
+                        //right - top
+                        matrix[last - i, first] = top;
+                    }
+                    else
+                    {
+                        //top matrix[first, i]
+                        //left matrix[i, last]
+                        //right matrix[last - i, first]
+                        //bottom matrix[last, last - i]
+
+                        //top -> right
+                        matrix[first, i] = matrix[last - i, first];
+                        //right -> bottom
+                        matrix[last - i, first] = matrix[last, last - i];
+                        //bottom -> left
+                        matrix[last, last - i] = matrix[i, last];
+                        //left -> top
+                        matrix[i, last] = top;
+                    }
+                }
+            }
+
+            return matrix;
+        }
+
+        public static int[] GetColumn(int[,] matrix, int column)
+        {
+            int rows = matrix.GetLength(0);
+            int columns = matrix.GetLength(1);
+
+            List<int> columnInts = new List<int>();
+
+            for (int i = 0; i < rows; i++)
+            {
+                columnInts.Add(matrix[i, column]);
+            }
+
+            return columnInts.ToArray();
+        }
+        #endregion
+
+        #region check if str2 is substring of str1
+
+        static void StringRotationMain()
+        {
+            bool test = isRotation("apple", "pleap");
+        }
+
+        public static bool isRotation(string str1, string str2)
+        {
+            if (str1.Length == str2.Length && str1.Length > 0)
+            {
+                string str = str1 + str1;
+
+                return isSubstring(str, str2);
+            }
+            return false;
+        }
+
+        public static bool isSubstring(string str1, string str2)
+        {
+            if (str1.Contains(str2)) return true;
+            return false;
+        }
+
+        #endregion
+
+        #region Print all possible combination
+        static void MainPrintCombo(string[] args)
+        {
+            string[] arr = new string[] { "a", "b", "c", "d" };
+
+            List<string> final = PrintCombo(arr, 0, arr.Length - 1);
+
+            int index = 1;
+            while (index < arr.Length)
+            {
+                final = final.Concat(PrintCombo(arr, index, arr.Length - 1)).ToList();
+                index++;
+            }
+        }
+
+        public static List<string> PrintCombo(string[] arr, int start, int end) //level = 0, a/b/c/d
+        {
+            int right = 0;
+            List<string> final = new List<string>();
+            int index = start;
+
+            while (index < end)
+            {
+                right = index + 1;
+                string prepEntry = combine(arr, start, index);
+
+                while (right <= end)
+                {
+                    final.Add(prepEntry + arr[right]);
+                    right++;
+                }
+                index++;
+            }
+
+            return final;
+        }
+
+        public static string combine(string[] arr, int start, int end)
+        {
+            string temp = string.Empty;
+            int index = start;
+
+            if (end == 0) return arr[0];
+
+            while (index <= end)
+            {
+                temp += arr[index];
+                index++;
+            }
+
+            return temp;
+        }
+
+        #endregion
+
+        #region Parenthesis Validation
+
+        static void MainParenthesis(string[] args)
+        {
+            //string str = "<ad675+-fkmfd>";
+            //string str = "<[(((kskfhdbh7)";
+            string str = "[<<((shfs8))>>]";
+            Hashtable hash = new Hashtable();
+
+            hash["<"] = ">";
+
+            bool test = CheckParenthesis(str, hash);
+        }
+
+        public static bool CheckParenthesis(string str, Hashtable hash)
+        {
+            char[] strCharArr = str.ToCharArray();
+
+            int leftParenCount = 0;
+            int rightParenCount = 0;
+            int index = 0;
+
+            while (true)
+            {
+                if (strCharArr[index] == '<' || strCharArr[index].ToString() == hash["<"].ToString())
+                {
+                    if (strCharArr[index] == '<') leftParenCount++;
+
+                    if (strCharArr[index].ToString() == hash["<"].ToString()) rightParenCount++;
+                }
+                index++;
+
+                if (index > strCharArr.Length - 1) break;
+            }
+
+            return leftParenCount == rightParenCount;
+        }
+
+        #endregion
+
+        #region Matrix find unique row
+        static void MainMatrixFindUniqueRow()
+        {
+            int[,] matrix = new int[,] { { 1, 2, 3 }, { 1, 2, 3 }, { 7, 8, 9 }, { 10, 11, 12 } };
+
+            List<string> uniqueRows = FindUnique(matrix);
+        }
+
+        public static List<string> FindUnique(int[,] matrix)
+        {
+            int rows = matrix.GetLength(0);
+            int lines = matrix.GetLength(1);
+
+            List<string> rowsStr = new List<string>();
+            List<string> uniqueRows = new List<string>();
+
+            for (int i = 0; i < rows; i++)
+            {
+                string temp = string.Empty;
+                for (int j = 0; j < lines; j++)
+                {
+                    temp += matrix[i, j].ToString();
+                }
+                rowsStr.Add(temp);
+            }
+
+            Hashtable hash = new Hashtable();
+
+            hash[rowsStr[0]] = false;
+
+            for (int i = 1; i < rowsStr.Count; i++)
+            {
+                if (hash.ContainsKey(rowsStr[i]))
+                {
+                    hash[rowsStr[i]] = true;
+                }
+                else
+                {
+                    hash[rowsStr[i]] = false;
+                }
+            }
+
+            for (int i = 0; i < rowsStr.Count; i++)
+            {
+                if (hash[rowsStr[i]].ToString() == "False")
+                {
+                    uniqueRows.Add(rowsStr[i]);
+                }
+
+            }
+
+            return uniqueRows;
+
+        }
+
+        public static T[] GetRow<T>(T[,] matrix, int row)
+        {
+            var columns = matrix.GetLength(1);
+            var array = new T[columns];
+            for (int i = 0; i < columns; ++i)
+                array[i] = matrix[row, i];
+            return array;
+        }
+        #endregion
+
+        #endregion
