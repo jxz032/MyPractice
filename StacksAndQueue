@@ -1,0 +1,415 @@
+
+        #region Stacks and Queues
+
+        //Implement a stack with threshold, once stack gets over threshold, create a new stack. But it behaves as one stack.
+        //Use LinkedList
+
+        static void MainSetsOfStack()
+        {
+            SetsOfStack testStack = new SetsOfStack(2);
+            testStack.Push(0);
+            testStack.Push(1);
+            testStack.Push(2);
+            testStack.Push(3);
+            testStack.Push(4);
+
+            testStack.Pop();
+        }
+
+        public class SetsOfStack
+        {
+            public List<MyStack> Stacks { get; set; }
+            public int Threshold { get; set; }
+            public int Count { get; set; }
+            public int StackCount { get; set; }
+
+            public SetsOfStack(int threshold)
+            {
+                Threshold = threshold;
+                Count = 0;
+                StackCount = 0;
+
+                Stacks = new List<MyStack>();
+            }
+
+            public void Push(int newItem)
+            {
+                int currentSpace = Count - StackCount * Threshold;
+
+                if (StackCount == 0)
+                {
+                    MyStack firstMyStack = new MyStack(Threshold);
+                    StackCount++;
+
+                    firstMyStack.Push(newItem);
+                    Count++;
+
+                    Stacks.Add(firstMyStack);
+                }
+                else if (currentSpace < 0)
+                {
+                    MyStack lastMyStack = Stacks.Last();
+                    lastMyStack.Push(newItem);
+                    Count++;
+                }
+                else
+                {
+                    MyStack newMyStack = new MyStack(Threshold);
+                    StackCount++;
+                    newMyStack.Push(newItem);
+                    Count++;
+
+                    Stacks.Add(newMyStack);
+                }
+            }
+
+            public void Pop()
+            {
+                MyStack lastStack = Stacks.Last();
+                lastStack.Pop();
+
+                if (lastStack.Count() == 0)
+                {
+                    Stacks.Remove(lastStack);
+                }
+            }
+
+        }
+
+        public class MyStack
+        {
+            public int Threshold { get; set; }
+            public Node Head { get; set; }
+            private int Total { get; set; }
+            public bool IsEmpty { get; set; }
+
+            public MyStack(int threshold)
+            {
+                Threshold = threshold;
+                Total = 0;
+            }
+
+            public int Count()
+            {
+                return Total;
+            }
+
+            public void Push(int newItem)
+            {
+                if (Total < Threshold)
+                {
+                    Node newNode = new Node(newItem);
+
+                    if (Head == null)
+                    {
+                        Head = newNode;
+                    }
+                    else
+                    {
+                        newNode.Next = Head;
+                        Head = newNode;
+                    }
+
+                    Total++;
+                    IsEmpty = false;
+                }
+            }
+
+            public int Pop()
+            {
+                int popItem = Head.Item;
+                Head = Head.Next;
+                Total--;
+
+                if (Total == 0) IsEmpty = true;
+
+                return popItem;
+            }
+
+            public int Peek()
+            {
+                if (Head == null) return -1;
+                return Head.Item;
+            }
+
+        }
+
+        private static void MainHanoi()
+        {
+            Hanoi gameSize3 = new Hanoi(3);
+            gameSize3.AutoPlay(gameSize3, 3, 1, false);
+
+            //Hanoi gameSize4 = new Hanoi(4);
+            //gameSize4.AutoPlay(gameSize4, 4, 1, false);
+
+            //Hanoi gameSize5 = new Hanoi(5);
+            //gameSize5.AutoPlay(gameSize5, 5, 1, false);
+
+            //Hanoi gameSize6 = new Hanoi(6);
+            //gameSize6.AutoPlay(gameSize6, 6, 1, false);
+        }
+
+        public class Hanoi
+        {
+            #region
+            private List<int> rods = new List<int> { 0, 1, 2 };
+
+            public MyStack[] Rod { get; set; }
+
+            public int Size { get; set; }
+
+            public Hanoi(int size)
+            {
+                Rod = new MyStack[3];
+                Rod[0] = new MyStack(Size);
+                Rod[1] = new MyStack(Size);
+                Rod[2] = new MyStack(Size);
+                Size = size;
+
+                Initialize();
+            }
+
+            public void Initialize()
+            {
+                Rod[0] = new MyStack(Size);
+                for (int i = Size; i > 0; i--)
+                {
+                    Rod[0].Push(i);
+                }
+            }
+
+            public int PopAtIndex(int index)
+            {
+                if (Rod[index].Head != null)
+                {
+                    return Rod[index].Pop();
+                }
+
+                return -1;
+            }
+
+            public int PeekAtIndex(int index)
+            {
+                if (Rod[index].Head == null) return -1;
+
+                return Rod[index].Peek();
+            }
+
+            public void PushAtIndex(int index, int newItem)
+            {
+                if (Rod[index].Head == null)
+                {
+                    Rod[index] = new MyStack(Size);
+                    Rod[index].Push(newItem);
+                }
+                else
+                {
+                    if (newItem < Rod[index].Peek())
+                    {
+                        Rod[index].Push(newItem);
+                    }
+                }
+            }
+
+            public void Play(int sourceIndex, int targetIndex)
+            {
+                int peekSource = PeekAtIndex(sourceIndex);
+                int peekTarget = PeekAtIndex(targetIndex);
+
+                if (peekSource != -1 && (peekSource < peekTarget || peekTarget == -1))
+                {
+                    PushAtIndex(targetIndex, PopAtIndex(sourceIndex));
+                }
+            }
+
+            public int FindThirdRod(int sourceIndex, int targetIndex)
+            {
+                List<int> rods = new List<int> { 0, 1, 2 };
+
+                if (!rods.Contains(sourceIndex) || !rods.Contains(targetIndex)) return -1;
+
+                return rods.FirstOrDefault(i => i != sourceIndex && i != targetIndex);
+            }
+
+            public int FindAvailRod(int size)
+            {
+                if (size == 0 || size == Size) return rods.FirstOrDefault(i => Rod[i].Head == null);
+
+                if (rods.Count(i => Rod[i].Head == null) != 0) return rods.FirstOrDefault(i => Rod[i].Head == null);
+
+                return rods.FirstOrDefault(i => Rod[i].Head != null && Rod[i].Head.Item > size);
+            }
+
+            public int FindChestIndex(int chest)
+            {
+                for (int i = 0; i < Rod.Length; i++)
+                {
+                    Node current = Rod[i].Head;
+
+                    while (current != null)
+                    {
+                        if (current.Item == chest)
+                        {
+                            return i;
+                        }
+                        current = current.Next;
+                    }
+                }
+
+                return -1;
+            }
+
+            public int CountEmptyRods()
+            {
+                return rods.Count(i => Rod[i].Head == null);
+            }
+            #endregion
+
+            public void AutoPlay(Hanoi hanoi, int size, int targetIndex, bool moveBack)
+            {
+                int sourceIndex = FindChestIndex(size);
+
+                if (size != hanoi.Size && !moveBack)
+                {
+                    targetIndex = FindThirdRod(sourceIndex, targetIndex);
+                }
+
+                if (size == 1)
+                {
+                    Play(sourceIndex, targetIndex);
+                }
+                else if (size == 2)
+                {
+                    int firstMove = FindThirdRod(sourceIndex, targetIndex);
+                    Play(sourceIndex, firstMove);
+
+                    int thirdIndex = FindThirdRod(sourceIndex, firstMove);
+                    Play(sourceIndex, thirdIndex);
+                    Play(firstMove, targetIndex);
+                }
+                else
+                {
+                    AutoPlay(hanoi, size - 1, targetIndex, false);
+
+                    targetIndex = FindAvailRod(size);
+                    Play(sourceIndex, targetIndex);
+
+                    AutoPlay(hanoi, size - 1, targetIndex, true);
+
+                }
+            }
+        }
+
+        public static void MainQueue()
+        {
+            MyQueue myQueue = new MyQueue();
+
+            myQueue.Enqueue(0);
+            myQueue.Enqueue(1);
+            myQueue.Enqueue(2);
+            myQueue.Enqueue(3);
+
+            int test = myQueue.Dequeue();
+            test = myQueue.Dequeue();
+
+            myQueue.Enqueue(4);
+            test = myQueue.Dequeue();
+        }
+
+        public class MyQueue
+        {
+            public MyStack Stack1 { get; set; }
+            public MyStack Stack2 { get; set; }
+
+            public MyQueue()
+            {
+                Stack1 = new MyStack(10);
+                Stack2 = new MyStack(10);
+            }
+
+            public void Enqueue(int item)
+            {
+                Stack1.Push(item);
+            }
+
+            public int Dequeue()
+            {
+                if (Stack2.Count() == 0)
+                {
+                    while (Stack1.Count() > 1)
+                    {
+                        Stack2.Push(Stack1.Pop());
+                    }
+                    return Stack1.Pop();
+                }
+                else
+                {
+                    return Stack2.Pop();
+                }
+
+            }
+        }
+
+        public static void MainSortStack()
+        {
+            MyStack stack = new MyStack(4);
+            stack.Push(2);
+            stack.Push(1);
+            stack.Push(4);
+            stack.Push(3);
+            MyStack sortedStack = SortStack(stack);
+
+        }
+
+        public static MyStack SortStack(MyStack stack)
+        {
+            Node head = new Node(stack.Pop());
+            MyStack sortedStack = new MyStack(stack.Threshold);
+            Node current;
+
+            while (stack.Count() != 0)
+            {
+                current = head;
+                int nextItem = stack.Pop();
+                if (current.Item < nextItem && current.Next != null && current.Next.Item > nextItem) // insert in middle
+                {
+                    Node temp = current.Next;
+                    current.Next = new Node(nextItem);
+                    current.Next.Next = temp;
+                    break;
+                }
+                else if (nextItem < current.Item)
+                {
+                    Node newHead = new Node(nextItem);
+                    newHead.Next = current;
+                    head = newHead;
+                }
+
+                while (current.Item < nextItem)
+                {
+                    if (current.Next == null)
+                    {
+                        current.Next = new Node(nextItem);
+                    }
+                    current = current.Next;
+                }
+
+            }
+
+            current = head;
+
+            while (current != null)
+            {
+                sortedStack.Push(current.Item);
+                current = current.Next;
+            }
+
+            return sortedStack;
+        }
+
+
+        #region
+
+        #endregion
+
+        #endregion
